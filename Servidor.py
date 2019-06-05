@@ -108,7 +108,6 @@ def connect_client(conn, addr):
             break
         command = message['command']
         content = message['data']
-
         if command == Commands.LIST:
             conn.send(client_list(addr).encode('utf-8'))
 
@@ -133,13 +132,16 @@ def connect_client(conn, addr):
             confirmation = confirmation['data']
             if confirmation == 's':
                 print('Privado iniciado')
+                conn.send('Privado iniciado'.encode('utf-8'))
+                client_pvd.send('Privado iniciado'.encode('utf-8'))
                 privateList.append([conn, client_pvd])
                 # privateList.append(client_pvd)
             else:
                 print('Privado recusado')
+                conn.send('Privado recusado'.encode('utf-8'))
+                client_pvd.send('Privado recusado'.encode('utf-8'))
 
-            elif command == Commands.QUITPVD:
-            print('cabou-se o chamego')
+        elif command == Commands.QUITPVD:
             client_pvd = None
             index = 0
             for linha in privateList:
@@ -152,6 +154,7 @@ def connect_client(conn, addr):
                 index += 1
 
             if inPrivate(client_pvd):
+                conn.send('Privado encerrado'.encode('utf-8'))
                 client_pvd.send('Privado encerrado'.encode('utf-8'))
 
             privateList.pop(index)
@@ -175,8 +178,6 @@ def connect_client(conn, addr):
                 send_broadcast(conn, message_all.encode('utf-8'))
 
     exit_connection(conn)
-
-    conn.close()
 
 
 def listener_clients():
